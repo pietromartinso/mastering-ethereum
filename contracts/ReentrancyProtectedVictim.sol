@@ -18,7 +18,7 @@ contract ReentrancyProtectedVictim {
 
   function withdrawFunds() public {
 
-    require(reentrant == true, "Withdraw reentrant call atempt");
+    require(reentrant != true, "Withdraw reentrant call atempt");
     reentrant = true;
     //----- Entering Critical Region -----
     uint bal = balances[msg.sender];
